@@ -1,3 +1,5 @@
+"""Developed by Jason Hernandez"""
+
 from getpass import getpass
 from multiprocessing import Queue, Process
 from netmiko import ConnectHandler
@@ -7,16 +9,15 @@ import csv
 import logging
 
 
-class CiscoEnableSSH:
+class Configure_SSH:
 
     def __init__(self, username, password, ip):
-        self.username = username
+        #add variables you are looking for in the class here.
+        self.user = username
         self.passw = password
         self.ip = ip
 
     def config_part(self, device, hostname):
-        logging.basicConfig(filename='SSHEnableFailure.log', level=logging.WARNING)
-        # Turns on logging to a file named SSHEnableFailure.
         if hostname == '':
             hostname = self.ip
             # if the hostname is blank use the ip address.
@@ -76,7 +77,7 @@ class CiscoEnableSSH:
                 device = {
                     'device_type': device_type,
                     'ip': ip_add,
-                    'username': self.username,
+                    'username': self.user,
                     'password': self.passw,
                 }
                 if device_type == 'cisco_ios_telnet':
@@ -94,14 +95,15 @@ class CiscoEnableSSH:
         device = {
             'device_type': 'cisco_ios',
             'ip': self.ip,
-            'username': self.username,
+            'username': self.user,
             'password': self.passw
         }
         self.config_part(device, hostname='')
 
 
 def cisco_ssh_enable():
-
+    logging.basicConfig(filename='SSHEnableFailure.log', level=logging.WARNING)
+        # Turns on logging to a file named SSHEnableFailure.
     print("Welcome to the SSH enable script for Cisco Devices\n")
     print("login creds needed!\n")
     username = input('Username: ')
@@ -123,15 +125,14 @@ def cisco_ssh_enable():
         if one_or_all.lower() == "one":
             ip = input('Please enter the target IP address: ')
             start_time = datetime.now()
-            CiscoEnableSSH(username, password, ip).cisco_ssh_one()
+            Configure_SSH(username, password, ip).cisco_ssh_one()
             end_time = datetime.now()
             total_time = end_time - start_time
             one_or_all_q = False
         elif one_or_all.lower() == "all":
             print('All devices will be changed.\n\n')
-            CiscoEnableSSH(username, password, ip)
             start_time = datetime.now()
-            CiscoEnableSSH(username, password, ip).cisco_ssh_many()
+            Configure_SSH(username, password, ip).cisco_ssh_many()
             end_time = datetime.now()
             total_time = end_time - start_time
             one_or_all_q = False
